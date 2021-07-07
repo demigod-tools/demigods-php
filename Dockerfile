@@ -162,9 +162,9 @@ RUN pecl bundle -d /usr/src/php/ext pcov \
     && rm /usr/src/php/ext/pcov-*.tgz \
     && docker-php-ext-install pcov
 
-RUN pecl bundle -d /usr/src/php/ext uploadprogress \
-    && rm /usr/src/php/ext/uploadprogress-*.tgz \
-    && docker-php-ext-install uploadprogress
+#RUN pecl bundle -d /usr/src/php/ext uploadprogress \
+#    && rm /usr/src/php/ext/uploadprogress-*.tgz \
+#    && docker-php-ext-install uploadprogress
 
 COPY php/overrides.ini /usr/local/etc/php-fpm.d
 COPY php/php.ini /usr/local/etc/php
