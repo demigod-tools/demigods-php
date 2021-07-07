@@ -193,7 +193,7 @@ RUN mkdir -p /opt
 
 WORKDIR /opt
 
-RUN cd /opt && git checkout https://github.com/pantheon-systems/terminus.git terminus
+RUN cd /opt && git clone https://github.com/pantheon-systems/terminus.git terminus
 WORKDIR /opt/terminus
 RUN cd /opt/terminus && composer install
 RUN cd /opt/terminus && composer update
