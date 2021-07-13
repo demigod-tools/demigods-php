@@ -1,4 +1,4 @@
-PROJECT_NAME ?= $(shell basename $(shell git rev-parse --show-toplevel))
+PROJECT_NAME ?= php
 REPO_NAME    ?= stovak/${PROJECT_NAME}
 VCS_REF      ?= $(shell git rev-parse --short HEAD)
 DATE_TAG     ?= $(shell TZ=UTC date +%Y-%m-%d_%H.%M)
