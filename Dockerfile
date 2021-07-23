@@ -1,5 +1,5 @@
-FROM php:8.0-fpm
-ARG PHP_VERSION=8.0
+ARG PHP_VERSION
+FROM php:${PHP_VERSION}-fpm
 
 LABEL org.label-schema.vendor="pantheon" \
   org.label-schema.name=$REPO_NAME \
