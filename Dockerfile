@@ -30,12 +30,9 @@ WORKDIR /tmp
 
 RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
 RUN update-ca-certificates --verbose --fresh
 RUN mkdir -p /usr/share/man/man1
-
 RUN apt-get update -y --fix-missing && apt-get install -y \
       supervisor \
       curl \
@@ -89,13 +86,21 @@ RUN apt-get update -y --fix-missing && apt-get install -y \
       unixodbc \
       unixodbc-dev \
       odbcinst \
-      msodbcsql17 \
-      mssql-tools \
       pv \
       rsync \
-      bash-completion
+      bash-completion 
 
-RUN apt-get update -y --fix-missing && apt-get -yf install   default-jre-headless default-jdk-headless default-jre default-jdk
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+RUN apt-get update -y --fix-missing \
+    && apt-get -yf \
+      install msodbcsql17 \
+      mssql-tools \
+      default-jre-headless \
+      default-jre \
+      default-jdk
+
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 RUN chmod +x ~/.*
