@@ -1,7 +1,7 @@
 ARG PHP_VERSION
 FROM php:${PHP_VERSION}-fpm
 
-LABEL org.label-schema.vendor="pantheon" \
+LABEL org.label-schema.vendor="demigod-tools" \
   org.label-schema.name=$REPO_NAME \
   org.label-schema.description="Prettier is an opinionated code formatter." \
   org.label-schema.build-date=$BUILD_DATE \
@@ -54,6 +54,8 @@ RUN apt-get update -y --fix-missing && apt-get install -y \
       icu-devtools \
       libicu-dev \
       libxml2-dev \
+      libzookeeper-mt2 \
+      libzookeeper-mt-dev \
       libcairo2 \
       libsodium-dev \
       libjpeg-dev \
@@ -88,7 +90,7 @@ RUN apt-get update -y --fix-missing && apt-get install -y \
       odbcinst \
       pv \
       rsync \
-      bash-completion 
+      bash-completion
 
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
@@ -150,10 +152,15 @@ RUN docker-php-ext-install -j$(nproc) pdo
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 RUN docker-php-ext-install -j$(nproc) opcache
 
-RUN git clone https://github.com/Imagick/imagick /usr/src/php/ext/imagick \
+RUN pecl bundle -d /usr/src/php/ext imagick \
   && cd /usr/src/php/ext/imagick \
   && phpize && ./configure && make \
   && docker-php-ext-install imagick
+
+RUN pecl bundle -d /usr/src/php/ext zookeeper-1.0.0 \
+  && cd /usr/src/php/ext/zookeeper \
+  && phpize && ./configure && make \
+  && docker-php-ext-install zookeeper
 
 RUN pecl bundle -d /usr/src/php/ext yaml \
     && rm /usr/src/php/ext/yaml-*.tgz \
@@ -167,9 +174,9 @@ RUN pecl bundle -d /usr/src/php/ext pcov \
     && rm /usr/src/php/ext/pcov-*.tgz \
     && docker-php-ext-install pcov
 
-#RUN pecl bundle -d /usr/src/php/ext uploadprogress \
-#    && rm /usr/src/php/ext/uploadprogress-*.tgz \
-#    && docker-php-ext-install uploadprogress
+RUN pecl bundle -d /usr/src/php/ext uploadprogress \
+    && rm /usr/src/php/ext/uploadprogress-*.tgz \
+    && docker-php-ext-install uploadprogress
 
 COPY php/overrides.ini /usr/local/etc/php-fpm.d
 COPY php/php.ini /usr/local/etc/php
