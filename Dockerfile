@@ -194,12 +194,12 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 
 
 ## Install MSSQL php extension
-RUN pecl bundle -d /usr/src/php/ext sqlsrv \
-    && rm /usr/src/php/ext/sqlsrv-*.tgz \
-    && docker-php-ext-install sqlsrv
-RUN pecl bundle -d /usr/src/php/ext pdo_sqlsrv \
-    && rm /usr/src/php/ext/pdo_sqlsrv-*.tgz \
-    && docker-php-ext-install pdo_sqlsrv
+#RUN pecl bundle -d /usr/src/php/ext sqlsrv \
+#    && rm /usr/src/php/ext/sqlsrv-*.tgz \
+#    && docker-php-ext-install sqlsrv
+#RUN pecl bundle -d /usr/src/php/ext pdo_sqlsrv \
+#    && rm /usr/src/php/ext/pdo_sqlsrv-*.tgz \
+#    && docker-php-ext-install pdo_sqlsrv
 
 RUN mkdir -p /opt
 

@@ -3,7 +3,7 @@ REPO_NAME    ?= ${DOCKER_IMAGE_ORG}/${PROJECT_NAME}
 VCS_REF      ?= $(shell git rev-parse --short HEAD)
 DATE_TAG     ?= $(shell TZ=UTC date +%Y-%m-%d_%H.%M)
 VERSION      ?= $(shell git describe --tags --always --dirty --match="v*" 2> /dev/null || cat $(CURDIR)/.version 2> /dev/null || echo v0)
-PHP_VERSION  ?= 8.0
+PHP_VERSION  ?= 8.1
 
 IMAGE_TAG=${DOCKER_IMAGE_HOST}/${DOCKER_IMAGE_ORG}/${PROJECT_NAME}
 BUILD_ID=${USER}-${VERSION}-$(VCS_REF)
