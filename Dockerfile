@@ -30,6 +30,8 @@ WORKDIR /tmp
 
 RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+RUN curl -s https://packagecloud.io/install/repositories/brianweaver/terminus/script.deb.sh | bash
+
 
 RUN update-ca-certificates --verbose --fresh
 RUN mkdir -p /usr/share/man/man1
@@ -203,16 +205,21 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 
 RUN mkdir -p /opt
 
+WORKDIR /tmp
+
+RUN git clone https://github.com/pantheon-systems/terminus \
+    && cd terminus \
+    && git checkout 3.x \
+    && composer install \
+    && composer phar:build \
+    && composer phar:install \
+    && rm -Rf /tmp/terminus
+
+
 WORKDIR /opt
 
-RUN cd /opt && git clone https://github.com/pantheon-systems/terminus.git terminus
-WORKDIR /opt/terminus
-RUN cd /opt/terminus && composer install
-RUN cd /opt/terminus && composer update
-RUN ln -s /opt/terminus/bin/terminus /usr/local/bin
-RUN mkdir -p /opt/terminus/plugins
-RUN composer create-project --no-dev -d /opt/terminus/plugins pantheon-systems/terminus-drupal-console-plugin
-RUN composer create-project --no-dev -d /opt/terminus/plugins pantheon-systems/terminus-rsync-plugin
+RUN /usr/local/bin/terminus self:plugin:install pantheon-systems/terminus-drupal-console-plugin
+RUN /usr/local/bin/terminus self:plugin:install pantheon-systems/terminus-rsync-plugin
 
 RUN composer global require drupal/coder
 RUN composer global require friendsofphp/php-cs-fixer
