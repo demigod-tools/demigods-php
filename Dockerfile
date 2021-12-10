@@ -123,9 +123,9 @@ RUN chown root:root /usr/bin/chromedriver
 RUN chmod +x /usr/bin/chromedriver
 RUN wget https://selenium-release.storage.googleapis.com/3.9/selenium-server-standalone-3.9.1.jar
 RUN mv selenium-server-standalone-3.9.1.jar /opt/selenium-server-standalone.jar
-RUN curl -fLSs https://circle.ci/cli | bash
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 RUN npm install -g npm
 RUN npm install -g yarn
@@ -196,30 +196,30 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 
 
 ## Install MSSQL php extension
-#RUN pecl bundle -d /usr/src/php/ext sqlsrv \
-#    && rm /usr/src/php/ext/sqlsrv-*.tgz \
-#    && docker-php-ext-install sqlsrv
-#RUN pecl bundle -d /usr/src/php/ext pdo_sqlsrv \
-#    && rm /usr/src/php/ext/pdo_sqlsrv-*.tgz \
-#    && docker-php-ext-install pdo_sqlsrv
+RUN pecl bundle -d /usr/src/php/ext sqlsrv-5.10.0beta2 \
+    && rm /usr/src/php/ext/sqlsrv-*.tgz \
+    && docker-php-ext-install sqlsrv
+RUN pecl bundle -d /usr/src/php/ext pdo_sqlsrv-5.10.0beta2 \
+    && rm /usr/src/php/ext/pdo_sqlsrv-*.tgz \
+    && docker-php-ext-install pdo_sqlsrv
 
 RUN mkdir -p /opt
 
 WORKDIR /tmp
 
-RUN git clone https://github.com/pantheon-systems/terminus \
-    && cd terminus \
-    && git checkout 3.x \
-    && composer install \
-    && composer phar:build \
-    && composer phar:install \
-    && rm -Rf /tmp/terminus
+#RUN git clone https://github.com/pantheon-systems/terminus \
+#    && cd terminus \
+#    && git checkout 3.x \
+#    && composer install \
+#    && composer phar:build \
+#    && composer phar:install \
+#    && rm -Rf /tmp/terminus
 
 
 WORKDIR /opt
 
-RUN /usr/local/bin/terminus self:plugin:install pantheon-systems/terminus-drupal-console-plugin
-RUN /usr/local/bin/terminus self:plugin:install pantheon-systems/terminus-rsync-plugin
+#RUN /usr/local/bin/terminus self:plugin:install pantheon-systems/terminus-drupal-console-plugin
+#RUN /usr/local/bin/terminus self:plugin:install pantheon-systems/terminus-rsync-plugin
 
 RUN composer global require drupal/coder
 RUN composer global require friendsofphp/php-cs-fixer
