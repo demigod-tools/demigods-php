@@ -126,7 +126,7 @@ RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-ke
     && chmod 755 /etc/ssl/certs/rds-combined-ca-bundle.pem \
     && printf "\n\nexport COMPOSER_ALLOW_SUPERUSER=1\n" >> $HOME/.bash_profile \
     && curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && export PATH="/var/www/vendor/bin:/root/.composer/global:./bin:$(composer config -g home)/vendor/bin:$PATH" \
+    && export PATH="/var/www/vendor/bin:/root/.composer/global:./bin:$(composer config -g home)/vendor/bin:$PATH"
 
 ENV PATH /var/www/vendor/bin:$PATH:/root/.composer/vendor/bin
 
@@ -227,8 +227,8 @@ COPY drush /root/.drush
 RUN chmod +x /opt/init
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh \
-    echo "*/15 * * * *	root    cd /var/www && vendor/bin/drush core:cron 2>&1" >> /etc/crontab
+RUN chmod +x /docker-entrypoint.sh
+RUN echo "*/15 * * * *	root    cd /var/www && vendor/bin/drush core:cron 2>&1" >> /etc/crontab
 
 ## these are used if the container is NOT going to share a filesystem with the host e.g. remote stack deploy
 #RUN composer install
