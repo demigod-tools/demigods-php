@@ -54,7 +54,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the Docker image
-        uses: actions/checkout@v2
         run: make && make push
         env:
           DOCKER_IMAGE_HOST: ghcr.io
