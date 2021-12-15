@@ -12,8 +12,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build the Docker image 8.0
       run: make
       env:
+        PHP_VERSION: "8.0"
+        DOCKER_IMAGE_HOST: ghcr.io
+        DOCKER_IMAGE_ORG: demigod-tools
+
+    - name: Build the Docker image 8.1
+      run: make
+      env:
+        PHP_VERSION: "8.1"
         DOCKER_IMAGE_HOST: ghcr.io
         DOCKER_IMAGE_ORG: demigod-tools
