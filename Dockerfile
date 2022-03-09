@@ -140,6 +140,12 @@ RUN composer selfupdate --2 \
     && docker-php-ext-install -j$(nproc) pdo \
     && docker-php-ext-install -j$(nproc) pdo_mysql \
     && docker-php-ext-install -j$(nproc) opcache \
+    && pecl bundle -d /usr/src/php/ext igbinary \
+    && cd /usr/src/php/ext/igbinary \
+    && phpize && ./configure && make \
+    && pecl bundle -d /usr/src/php/ext zstd \
+    && cd /usr/src/php/ext/zstd \
+    && phpize && ./configure && make \
     && pecl bundle -d /usr/src/php/ext imagick \
     && cd /usr/src/php/ext/imagick \
     && phpize && ./configure && make \
