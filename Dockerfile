@@ -22,12 +22,17 @@ LABEL org.label-schema.vendor="demigod-tools" \
 ARG ENV
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV LANG en_US.utf8
-ENV ACCEPT_EULA Y
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /tmp
+COPY php /usr/local/etc
+COPY init /opt/init
+COPY drush /root/.drush
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-RUN apt-get update -y && apt-get install -y \
+RUN update-ca-certificates --verbose --fresh \
+    && mkdir -p /usr/share/man/man1 \
+    && apt-get update -y --fix-missing && apt-get install -y \
       apt-transport-https \
       apt-utils \
       apt-utils \
@@ -64,6 +69,8 @@ RUN apt-get update -y && apt-get install -y \
       libzip-dev \
       libzookeeper-mt-dev \
       libzookeeper-mt2 \
+      libtool \
+      libtool-bin \
       locales \
       nfs-common \
       odbcinst \
@@ -84,13 +91,14 @@ RUN apt-get update -y && apt-get install -y \
       wget \
       xvfb \
       zip \
+      zstd \
     && rm -rf /var/lib/apt/lists/* \
-    && printf "\n\nexport COMPOSER_ALLOW_SUPERUSER=1\n" >> $HOME/.bash_profile 
-
-
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-
-RUN docker-php-ext-install -j$(nproc) intl \
+    && printf "\n\nexport COMPOSER_ALLOW_SUPERUSER=1\n" >> $HOME/.bash_profile \
+    && chmod +x ~/.* \
+    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && locale-gen en_US.UTF-8 \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && docker-php-ext-install -j$(nproc) intl \
     && docker-php-ext-install -j$(nproc) pcntl \
     && docker-php-ext-install -j$(nproc) soap \
     && docker-php-ext-install -j$(nproc) xml \
@@ -124,25 +132,15 @@ RUN docker-php-ext-install -j$(nproc) intl \
     && docker-php-ext-install pcov \
     && pecl bundle -d /usr/src/php/ext uploadprogress \
     && rm /usr/src/php/ext/uploadprogress-*.tgz \
-    && docker-php-ext-install uploadprogress
-
-COPY php/overrides.ini /usr/local/etc/php-fpm.d
-COPY php/php.ini /usr/local/etc/php
-COPY php/overrides.ini /usr/local/etc/php/conf.d
-
-RUN pecl config-set php_ini /usr/local/etc/php/php.ini  \
+    && docker-php-ext-install uploadprogress \
+    && pecl config-set php_ini /usr/local/etc/php/php.ini  \
     && pear config-set php_ini /usr/local/etc/php/php.ini  \
     && pecl channel-update pecl.php.net \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install oauth \
-    && mkdir -p /opt
-
-RUN wget https://curl.se/ca/cacert.pem -O /etc/ssl/certs/cacert.pem
-
-WORKDIR /opt
-
-RUN echo "env[LC_ALL] = \$LC_ALL" >> /usr/local/etc/php-fpm.d/www.conf \
+    && mkdir -p /opt \
+    && echo "env[LC_ALL] = \$LC_ALL" >> /usr/local/etc/php-fpm.d/www.conf \
     && echo "env[ENV] = \$ENV" >> /usr/local/etc/php-fpm.d/www.conf \
     && echo "env[DB_DRIVER] = \$DB_DRIVER" >> /usr/local/etc/php-fpm.d/www.conf \
     && echo "env[DB_HOST] = \$DB_HOST" >> /usr/local/etc/php-fpm.d/www.conf \
@@ -158,20 +156,32 @@ RUN echo "env[LC_ALL] = \$LC_ALL" >> /usr/local/etc/php-fpm.d/www.conf \
     && echo "env[DRUPAL_SYSTEM_LOGGING_ERROR_LEVEL] = \$DRUPAL_SYSTEM_LOGGING_ERROR_LEVEL" >> /usr/local/etc/php-fpm.d/www.conf \
     && echo "opcache.enable=1" >>  /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.jit_buffer_size=100M" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
-    && echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini 
-
-COPY init /opt/init
-COPY drush /root/.drush
-RUN chmod +x /opt/init
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-RUN echo "*/15 * * * *	root    cd /var/www && vendor/bin/drush core:cron 2>&1" >> /etc/crontab
-
-RUN rm -Rf /usr/src/*
-RUN echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.conf
-RUN wget -O /usr/local/bin/php-fpm-healthcheck \
+    && echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "export LC_ALL=en_US.UTF-8" >> ~/.bashrc \
+    && echo "export LANG=en_US.UTF-8" >> ~/.bashrc \
+    && echo "export LANGUAGE=en_US.UTF-8" >> ~/.bashrc \
+    && chmod +x /opt/init && chmod +x /docker-entrypoint.sh \
+    && echo "*/15 * * * *	root    cd /var/www && vendor/bin/drush core:cron 2>&1" >> /etc/crontab \
+    && rm -Rf /usr/src/* \
+    && echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.conf \
+    && wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
     && chmod +x /usr/local/bin/php-fpm-healthcheck
+
+# Iconv work-around
+
+RUN rm /usr/bin/iconv \
+  && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
+  && cd libiconv-1.14 \
+  && ./configure --prefix=/ \
+  && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
+  | patch -p1 -u  \
+  && make \
+  && make install \
+  && libtool --finish /usr/local/lib \
+  && cd .. \
+  && rm -rf libiconv-1.14
+
 
 STOPSIGNAL SIGQUIT
 
