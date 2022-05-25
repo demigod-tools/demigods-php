@@ -169,7 +169,6 @@ RUN update-ca-certificates --verbose --fresh \
     && chmod +x /usr/local/bin/php-fpm-healthcheck
 
 # Iconv work-around
-
 RUN rm /usr/bin/iconv \
   && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
   && cd libiconv-1.14 \
@@ -181,7 +180,6 @@ RUN rm /usr/bin/iconv \
   && libtool --finish /usr/local/lib \
   && cd .. \
   && rm -rf libiconv-1.14
-
 
 STOPSIGNAL SIGQUIT
 
