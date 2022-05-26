@@ -3,11 +3,12 @@ ARG PHP_VERSION
 FROM golang:1.18.2 AS gcsfuse
 RUN apt update -y && apt install git
 ENV GOPATH /go
-RUN go install github.com/googlecloudplatform/gcsfuse@latest
-
+RUN go install github.com/googlecloudplatform/gcsfuse@latest \
+     && go install github.com/mikefarah/yq/v4@latest
 FROM php:${PHP_VERSION}-fpm
 
 COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin
+COPY --from=gcsfuse /go/bin/yq /usr/local/bin
 
 LABEL org.label-schema.vendor="demigod-tools" \
   org.label-schema.name=$REPO_NAME \
@@ -25,10 +26,6 @@ ENV LANG en_US.utf8
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /tmp
-COPY php /usr/local/etc
-COPY init /opt/init
-COPY drush /root/.drush
-COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN update-ca-certificates --verbose --fresh \
     && mkdir -p /usr/share/man/man1 \
@@ -48,6 +45,7 @@ RUN update-ca-certificates --verbose --fresh \
       gvfs \
       icu-devtools \
       imagemagick \
+      jq \
       lcov \
       libcairo2 \
       libcairo2-dev \
@@ -166,20 +164,23 @@ RUN update-ca-certificates --verbose --fresh \
     && echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.conf \
     && wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
-    && chmod +x /usr/local/bin/php-fpm-healthcheck
+    && chmod +x /usr/local/bin/php-fpm-healthcheck \
+    && rm /usr/bin/iconv \
+    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
+    && cd libiconv-1.14 \
+    && ./configure --prefix=/ \
+    && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
+    | patch -p1 -u  \
+    && make \
+    && make install \
+    && libtool --finish /usr/local/lib \
+    && cd .. \
+    && rm -rf libiconv-1.14
 
-# Iconv work-around
-RUN rm /usr/bin/iconv \
-  && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
-  && cd libiconv-1.14 \
-  && ./configure --prefix=/ \
-  && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
-  | patch -p1 -u  \
-  && make \
-  && make install \
-  && libtool --finish /usr/local/lib \
-  && cd .. \
-  && rm -rf libiconv-1.14
+COPY php /usr/local/etc
+COPY init /opt/init
+COPY drush /root/.drush
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 STOPSIGNAL SIGQUIT
 
