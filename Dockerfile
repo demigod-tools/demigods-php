@@ -26,6 +26,8 @@ ENV LANG en_US.utf8
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /tmp
+COPY init /opt/init
+COPY drush /root/.drush
 
 RUN update-ca-certificates --verbose --fresh \
     && mkdir -p /usr/share/man/man1 \
@@ -178,8 +180,6 @@ RUN update-ca-certificates --verbose --fresh \
     && rm -rf libiconv-1.14
 
 COPY php /usr/local/etc
-COPY init /opt/init
-COPY drush /root/.drush
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 STOPSIGNAL SIGQUIT
