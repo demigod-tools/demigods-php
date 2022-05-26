@@ -25,11 +25,12 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV LANG en_US.utf8
 ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /tmp
 
 COPY init /opt/init
 COPY drush /root/.drush
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+WORKDIR /tmp
 
 RUN update-ca-certificates --verbose --fresh \
     && mkdir -p /usr/share/man/man1 \
@@ -168,18 +169,18 @@ RUN update-ca-certificates --verbose --fresh \
     && echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.conf \
     && wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
-    && chmod +x /usr/local/bin/php-fpm-healthcheck \
-    && rm /usr/bin/iconv \
-    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
-    && cd libiconv-1.14 \
-    && ./configure --prefix=/ \
-    && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
-    | patch -p1 -u  \
-    && make \
-    && make install \
-    && libtool --finish /usr/local/lib \
-    && cd .. \
-    && rm -rf libiconv-1.14
+    && chmod +x /usr/local/bin/php-fpm-healthcheck # \
+#    && rm -Rf /usr/bin/iconv \
+#    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
+#    && cd libiconv-1.14 \
+#    && ./configure --prefix=/ \
+#    && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
+#    | patch -p1 -u  \
+#    && make \
+#    && make install \
+#    && libtool --finish /usr/local/lib \
+#    && cd .. \
+#    && rm -rf libiconv-1.14
 
 COPY php /usr/local/etc
 
