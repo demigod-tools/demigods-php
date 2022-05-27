@@ -52,8 +52,10 @@ RUN update-ca-certificates --verbose --fresh \
       imagemagick \
       jq \
       lcov \
+      less  \
       libcairo2 \
       libcairo2-dev \
+      libfreetype6  \
       libfreetype6-dev \
       libgconf-2-4 \
       libgd-dev \
@@ -64,16 +66,18 @@ RUN update-ca-certificates --verbose --fresh \
       libmagickwand-dev \
       libpcre3-dev \
       libpng-dev \
-      libpng-dev \
       libsodium-dev \
+      libtool \
+      libtool-bin \
+      libxext6  \
       libxi6 \
       libxml2-dev \
+      libxrender1  \
+      libxtst6  \
       libyaml-dev \
       libzip-dev \
       libzookeeper-mt-dev \
       libzookeeper-mt2 \
-      libtool \
-      libtool-bin \
       locales \
       nfs-common \
       odbcinst \
@@ -81,6 +85,10 @@ RUN update-ca-certificates --verbose --fresh \
       procps \
       procps \
       pv \
+      python3 \
+      python3-cryptography \
+      python3-netifaces \
+      python3-pip \
       re2c \
       redis-tools \
       rsync \
@@ -165,11 +173,12 @@ RUN update-ca-certificates --verbose --fresh \
     && echo "export LANGUAGE=en_US.UTF-8" >> ~/.bashrc \
     && chmod +x /opt/init && chmod +x /docker-entrypoint.sh \
     && echo "*/15 * * * *	root    cd /var/www && vendor/bin/drush core:cron 2>&1" >> /etc/crontab \
-    && rm -Rf /usr/src/* \
+    && pip3 install projector-installer --user \
     && echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.conf \
     && wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
-    && chmod +x /usr/local/bin/php-fpm-healthcheck # \
+    && chmod +x /usr/local/bin/php-fpm-healthcheck
+
 #    && rm -Rf /usr/bin/iconv \
 #    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
 #    && cd libiconv-1.14 \
