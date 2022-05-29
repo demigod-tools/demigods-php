@@ -83,6 +83,7 @@ RUN update-ca-certificates --verbose --fresh \
       libzookeeper-mt2 \
       locales \
       nfs-common \
+      net-tools\
       odbcinst \
       pcscd \
       procps \
@@ -180,7 +181,10 @@ RUN update-ca-certificates --verbose --fresh \
     && echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.conf \
     && wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
-    && chmod +x /usr/local/bin/php-fpm-healthcheck
+    && chmod +x /usr/local/bin/php-fpm-healthcheck \
+    && chown -R www-data:www-data /var/www/web  \
+    && rm /var/www/html  \
+    && ln -s /var/www/web /var/www/html
 
 #    && rm -Rf /usr/bin/iconv \
 #    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
