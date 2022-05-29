@@ -34,7 +34,9 @@ WORKDIR /tmp
 
 RUN update-ca-certificates --verbose --fresh \
     && mkdir -p /usr/share/man/man1 \
-    && apt-get update -y --fix-missing && apt-get install -y \
+    && apt-get update -y --fix-missing  \
+    && apt-get upgrade  \
+    && apt-get install -y \
       apt-transport-https \
       apt-utils \
       apt-utils \
