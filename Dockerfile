@@ -52,6 +52,7 @@ RUN update-ca-certificates --verbose --fresh \
       gvfs \
       icu-devtools \
       imagemagick \
+      iputils-ping \
       jq \
       lcov \
       less  \
