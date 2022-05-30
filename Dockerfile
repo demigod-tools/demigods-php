@@ -183,7 +183,8 @@ RUN update-ca-certificates --verbose --fresh \
     && wget -O /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
     && chmod +x /usr/local/bin/php-fpm-healthcheck \
-    && chown -R www-data:www-data /var/www/web  \
+    && mkdir -p /var/www/web \
+    && chown -R www-data:www-data /var/www/web \
     && rm -Rf /var/www/html  \
     && ln -s /var/www/web /var/www/html
 
