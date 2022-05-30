@@ -45,6 +45,7 @@ RUN update-ca-certificates --verbose --fresh \
       cron \
       curl \
       default-mysql-client \
+      libfcgi0ldbl \
       g++ \
       gcc \
       git \
