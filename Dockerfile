@@ -32,7 +32,10 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 WORKDIR /tmp
 
-RUN update-ca-certificates --verbose --fresh \
+RUN apt-get update -y && apt-get install gnupg -y \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+    && update-ca-certificates --verbose --fresh \
     && mkdir -p /usr/share/man/man1 \
     && apt-get update -y --fix-missing  \
     && apt-get upgrade  \
@@ -46,10 +49,10 @@ RUN update-ca-certificates --verbose --fresh \
       curl \
       default-mysql-client \
       libfcgi0ldbl \
+      google-cloud-cli \
       g++ \
       gcc \
       git \
-      gnupg \
       gvfs \
       icu-devtools \
       imagemagick \
