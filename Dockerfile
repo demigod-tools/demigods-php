@@ -100,6 +100,7 @@ RUN update-ca-certificates --verbose --fresh \
       software-properties-common \
       supervisor \
       syncthing \
+      telnet \
       unixodbc \
       unixodbc-dev \
       unzip \
