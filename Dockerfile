@@ -190,7 +190,10 @@ RUN apt-get update -y && apt-get install gnupg -y \
     && mkdir -p /var/www/web \
     && chown -R www-data:www-data /var/www/web \
     && rm -Rf /var/www/html  \
-    && ln -s /var/www/web /var/www/html
+    && ln -s /var/www/web /var/www/html \
+    && wget https://robo.li/robo.phar \
+    && chmod +x robo.phar \
+    && mv robo.phar /usr/local/bin/robo
 
 #    && rm -Rf /usr/bin/iconv \
 #    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
