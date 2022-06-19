@@ -2,5 +2,4 @@
 
 set -e
 
-
-php-fpm
+/usr/bin/supervisord -c /etc/supervisor/supervisord.conf

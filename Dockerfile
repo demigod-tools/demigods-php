@@ -38,7 +38,7 @@ RUN apt-get update -y && apt-get install gnupg -y \
     && update-ca-certificates --verbose --fresh \
     && mkdir -p /usr/share/man/man1 \
     && apt-get update -y --fix-missing  \
-    && apt-get upgrade  \
+    && apt-get upgrade -y \
     && apt-get install -y \
       apt-transport-https \
       apt-utils \
@@ -64,6 +64,7 @@ RUN apt-get update -y && apt-get install gnupg -y \
       libcairo2-dev \
       libfreetype6  \
       libfreetype6-dev \
+      libfcgi0ldbl \
       libgconf-2-4 \
       libgd-dev \
       libgss3 \
@@ -88,6 +89,7 @@ RUN apt-get update -y && apt-get install gnupg -y \
       locales \
       nfs-common \
       net-tools\
+      nginx \
       odbcinst \
       pcscd \
       procps \
@@ -193,7 +195,10 @@ RUN apt-get update -y && apt-get install gnupg -y \
     && ln -s /var/www/web /var/www/html \
     && wget https://robo.li/robo.phar \
     && chmod +x robo.phar \
-    && mv robo.phar /usr/local/bin/robo
+    && mv robo.phar /usr/local/bin/robo \
+    && rm -Rf /etc/ngin*
+COPY nginx /etc
+COPY php /usr/local/etc
 
 #    && rm -Rf /usr/bin/iconv \
 #    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
@@ -207,13 +212,12 @@ RUN apt-get update -y && apt-get install gnupg -y \
 #    && cd .. \
 #    && rm -rf libiconv-1.14
 
-COPY php /usr/local/etc
-
-
 STOPSIGNAL SIGQUIT
 
 WORKDIR /var/www
 
 EXPOSE 9000
+EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT [ "/docker-entrypoint.sh"]
 CMD [ "php-fpm" ]
