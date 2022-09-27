@@ -1,14 +1,14 @@
 ARG PHP_VERSION
 
-FROM golang:1.18.2 AS gcsfuse
-RUN apt update -y && apt install git
-ENV GOPATH /go
-RUN go install github.com/googlecloudplatform/gcsfuse@latest \
-     && go install github.com/mikefarah/yq/v4@latest
+#FROM golang:1.18.2 AS gcsfuse
+#RUN apt update -y && apt install git
+#ENV GOPATH /go
+#RUN go install github.com/googlecloudplatform/gcsfuse@latest \
+#     && go install github.com/mikefarah/yq/v4@latest
 FROM php:${PHP_VERSION}-fpm
 
-COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin
-COPY --from=gcsfuse /go/bin/yq /usr/local/bin
+# COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin
+# COPY --from=gcsfuse /go/bin/yq /usr/local/bin
 
 LABEL org.label-schema.vendor="demigod-tools" \
   org.label-schema.name=$REPO_NAME \
@@ -220,4 +220,4 @@ EXPOSE 9000
 EXPOSE 8080
 EXPOSE 80
 ENTRYPOINT [ "/docker-entrypoint.sh"]
-CMD [ "php-fpm" ]
+CMD [ "/usr/bin/supervisord", "-c /etc/supervisor/supervisord.conf" ]
