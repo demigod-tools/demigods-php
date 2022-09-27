@@ -1,5 +1,5 @@
 PROJECT_PATH ?= $(shell realpath .)
-PROJECT_NAME ?= $(basename ${PROJECT_PATH})
+PROJECT_NAME ?= php
 REPO_NAME    ?= ${DOCKER_IMAGE_ORG}/${PROJECT_NAME}
 VCS_REF      ?= $(shell git rev-parse --short HEAD)
 DATE_TAG     ?= $(shell TZ=UTC date +%Y-%m-%d_%H.%M)
