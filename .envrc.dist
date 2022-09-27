@@ -1,0 +1,8 @@
+
+export PROJECT_PATH=$(realpath .)
+export PROJECT_NAME=$(basename ${PROJECT_PATH})
+
+export DOCKER_IMAGE_HOST=ghcr.io
+export DOCKER_IMAGE_ORG=demigod-tools
+export DOCKER_CONTAINER_PREFIX=${DOCKER_IMAGE_HOST}/${DOCKER_IMAGE_ORG}
+export PHP_CONTAINER=${DOCKER_CONTAINER_PREFIX}/php:php-8.1

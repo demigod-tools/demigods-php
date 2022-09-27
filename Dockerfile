@@ -42,17 +42,15 @@ RUN apt-get update -y && apt-get install gnupg -y \
     && apt-get install -y \
       apt-transport-https \
       apt-utils \
-      apt-utils \
       awscli \
       bash-completion \
       cron \
       curl \
       default-mysql-client \
-      libfcgi0ldbl \
-      google-cloud-cli \
       g++ \
       gcc \
       git \
+      google-cloud-cli \
       gvfs \
       icu-devtools \
       imagemagick \
@@ -62,9 +60,9 @@ RUN apt-get update -y && apt-get install gnupg -y \
       less  \
       libcairo2 \
       libcairo2-dev \
+      libfcgi0ldbl  \
       libfreetype6  \
       libfreetype6-dev \
-      libfcgi0ldbl \
       libgconf-2-4 \
       libgd-dev \
       libgss3 \
@@ -87,8 +85,8 @@ RUN apt-get update -y && apt-get install gnupg -y \
       libzookeeper-mt-dev \
       libzookeeper-mt2 \
       locales \
-      nfs-common \
       net-tools\
+      nfs-common \
       nginx \
       odbcinst \
       pcscd \
@@ -197,20 +195,29 @@ RUN apt-get update -y && apt-get install gnupg -y \
     && chmod +x robo.phar \
     && mv robo.phar /usr/local/bin/robo \
     && rm -Rf /etc/ngin*
-COPY nginx /etc
-COPY php /usr/local/etc
 
-#    && rm -Rf /usr/bin/iconv \
-#    && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
-#    && cd libiconv-1.14 \
-#    && ./configure --prefix=/ \
-#    && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
-#    | patch -p1 -u  \
-#    && make \
-#    && make install \
-#    && libtool --finish /usr/local/lib \
-#    && cd .. \
-#    && rm -rf libiconv-1.14
+RUN curl -OL https://github.com/drush-ops/drush-launcher/releases/download/0.10.1/drush.phar \
+ && chmod +x drush.phar \
+ && mv drush.phar /usr/local/bin/drush \
+ && curl -sSL https://sdk.cloud.google.com | bash
+
+RUN rm -Rf /usr/local/etc/conf.d
+COPY configs/phpfpm /usr/local/etc
+COPY configs/supervisor /etc/supervisor
+COPY configs/nginx /etc/nginx
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY init /opt/init
+
+RUN chown -R www-data:www-data /var/www/web  \
+    && rm -Rf /var/www/html  \
+    && ln -s /var/www/web /var/www/html \
+    && mkdir -p /files/bucket-data \
+    && mkdir -p /secrets/db \
+    && echo "<?php phpinfo(); " >> /var/www/web/index.php \
+    && wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /cloud_sql_proxy \
+    && chmod +x /cloud_sql_proxy \
+    && chmod +x /docker-entrypoint.sh && chmod +x /opt/init
 
 STOPSIGNAL SIGQUIT
 

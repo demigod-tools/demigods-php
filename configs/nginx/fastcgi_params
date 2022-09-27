@@ -21,6 +21,6 @@ fastcgi_param  SERVER_NAME        $server_name;
 fastcgi_param  SERVER_PORT        $server_port;
 fastcgi_param  SERVER_PROTOCOL    $server_protocol;
 fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
-fastcgi_param SERVER_NAME btwnlinz.com;
-fastcgi_param HTTP_HOST   btwnlinz.com;
+fastcgi_param SERVER_NAME localhost:8080;
+fastcgi_param HTTP_HOST   localhost:8080;
 # fastcgi_index index.php;

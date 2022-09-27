@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  phpfpm:
+    container_name: phpfpm
+    env_file:
+      - ./.env.docker
+    image: ${PHP_CONTAINER}
+    command:
+      - "/usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+    expose:
+      - "9000"
+      - "8080"
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+    networks:
+      - demigod
+    environment:
+      - BACKUP_FILE_NAME=${PROJECT_NAME}.sql.gz
+      - DATABASE_NAME=drupal8
+      - PROJECT_NAME=${PROJECT_NAME}
+    volumes:
+      - "./files:/files"
+      - ".:/var/www"
