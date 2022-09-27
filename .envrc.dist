@@ -1,4 +1,4 @@
-
+## Basic env file
 export PROJECT_PATH=$(realpath .)
 export PROJECT_NAME=$(basename ${PROJECT_PATH})
 
