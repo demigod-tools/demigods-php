@@ -222,7 +222,15 @@ RUN chown -R www-data:www-data /var/www/web  \
     && echo "<?php phpinfo(); " >> /var/www/web/index.php \
     && wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /cloud_sql_proxy \
     && chmod +x /cloud_sql_proxy \
-    && chmod +x /docker-entrypoint.sh && chmod +x /opt/init
+    && chmod +x /docker-entrypoint.sh && chmod +x /opt/init \
+    && wget -O phive.phar "https://phar.io/releases/phive.phar" \
+    && wget -O phive.phar.asc "https://phar.io/releases/phive.phar.asc" \
+    && gpg --keyserver hkps://keys.openpgp.org --recv-keys 0x6AF725270AB81E04D79442549D8A98B29B2D5D79 \
+    && gpg --verify phive.phar.asc phive.phar \
+    && rm phive.phar.asc \
+    && chmod +x phive.phar \
+    && mv phive.phar /usr/local/bin/phive
+
 
 STOPSIGNAL SIGQUIT
 
