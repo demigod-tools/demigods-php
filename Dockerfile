@@ -30,8 +30,12 @@ COPY init /opt/init
 COPY drush /root/.drush
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
 WORKDIR /tmp
+
+RUN curl https://drupalconsole.com/installer -L -o drupal.phar
+# Install console.
+RUN mv drupal.phar /usr/local/bin/drupal && \
+    chmod +x /usr/local/bin/drupal 
 
 RUN apt-get update -y && apt-get install gnupg -y \
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
