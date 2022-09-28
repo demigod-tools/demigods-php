@@ -32,10 +32,10 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 WORKDIR /tmp
 
-RUN curl https://drupalconsole.com/installer -L -o drupal.phar
+#RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 # Install console.
-RUN mv drupal.phar /usr/local/bin/drupal && \
-    chmod +x /usr/local/bin/drupal 
+#RUN mv drupal.phar /usr/local/bin/drupal && \
+#    chmod +x /usr/local/bin/drupal 
 
 RUN apt-get update -y && apt-get install gnupg -y \
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
@@ -229,7 +229,15 @@ RUN chown -R www-data:www-data /var/www/web  \
     && gpg --verify phive.phar.asc phive.phar \
     && rm phive.phar.asc \
     && chmod +x phive.phar \
-    && mv phive.phar /usr/local/bin/phive
+    && mv phive.phar /usr/local/bin/phive \
+    && curl -JOL https://clue.engineering/phar-composer-latest.phar \
+    && mv phar-composer-*.phar /usr/local/bin/phar-composer \
+    && chmod +x /usr/local/bin/phar-composer \
+    && git clone https://github.com/demigod-tools/drupal-console \
+    && cd drupal-console \
+    && composer install \
+    && make build \
+    && mv ./drupal /usr/local/bin
 
 
 STOPSIGNAL SIGQUIT
