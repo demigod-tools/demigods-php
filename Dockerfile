@@ -29,6 +29,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY init /opt/init
 COPY drush /root/.drush
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /tmp
 
