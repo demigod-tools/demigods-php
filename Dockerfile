@@ -1,14 +1,6 @@
 ARG PHP_VERSION
 
-#FROM golang:1.18.2 AS gcsfuse
-#RUN apt update -y && apt install git
-#ENV GOPATH /go
-#RUN go install github.com/googlecloudplatform/gcsfuse@latest \
-#     && go install github.com/mikefarah/yq/v4@latest
 FROM php:${PHP_VERSION}-fpm
-
-# COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin
-# COPY --from=gcsfuse /go/bin/yq /usr/local/bin
 
 LABEL org.label-schema.vendor="demigod-tools" \
   org.label-schema.name=$REPO_NAME \
@@ -143,9 +135,10 @@ RUN apt-get update -y && apt-get install gnupg -y \
     && phpize && ./configure && make \
     && docker-php-ext-install imagick \
     && pecl bundle -d /usr/src/php/ext zookeeper-1.0.0 \
-    && cd /usr/src/php/ext/zookeeper \
-    && phpize && ./configure && make \
-    && docker-php-ext-install zookeeper \
+    ## zookeeper doesn't work with 8.2 ATM
+    ## && cd /usr/src/php/ext/zookeeper \
+    ## && phpize && ./configure && make \
+    ## && docker-php-ext-install zookeeper \
     && pecl bundle -d /usr/src/php/ext yaml \
     && rm /usr/src/php/ext/yaml-*.tgz \
     && docker-php-ext-install yaml \
