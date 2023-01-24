@@ -59,3 +59,10 @@ jobs:
           PHP_VERSION: "8.1"
           DOCKER_IMAGE_HOST: ghcr.io
           DOCKER_IMAGE_ORG: demigod-tools
+
+      - name: Build the Docker image 8.1
+        run: make && make push
+        env:
+          PHP_VERSION: "8.2"
+          DOCKER_IMAGE_HOST: ghcr.io
+          DOCKER_IMAGE_ORG: demigod-tools
